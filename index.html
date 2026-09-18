@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleet Inventory & Job Card System — Sign in</title>
+<link rel="icon" href="assets/img/logo.svg">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="login-screen">
+    <div class="login-card">
+      <div class="brand">
+        <img src="assets/img/logo.svg" alt="Logo">
+        <div class="brand-text">
+          Fleet Inventory<br>
+          <small>Job Card &amp; Stock Management</small>
+        </div>
+      </div>
+
+      <div class="login-error" id="loginError"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="userId">User ID</label>
+          <input type="text" id="userId" autocomplete="username" required autofocus>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:11px;" id="loginBtn">
+          Sign in
+        </button>
+      </form>
+
+      <div class="login-footer">
+        First run? Default admin: <b>admin</b> / <b>admin123</b> — change this immediately in Admin Console.
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('expired')) {
+      const err = document.getElementById('loginError');
+      err.textContent = 'Your session expired. Please sign in again.';
+      err.style.display = 'block';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+      errBox.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+
+      const userId = document.getElementById('userId').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'login', payload: { userId, password } })
+        });
+        const json = await res.json();
+        const data = json.ok ? json.data : json;
+
+        if (!data.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+        Session.save(data.data);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        errBox.textContent = err.message || 'Login failed. Check your credentials.';
+        errBox.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      }
+    });
+  </script>
+</body>
+</html>
