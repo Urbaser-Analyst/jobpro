@@ -24,12 +24,15 @@ Dashboard.modules.mrf = {
     const canSeeAll = MRF_WIDE_ROLES.includes(session.role);
     const isAdmin = session.role === 'Admin';
 
-    const [products, config, mrfList, pending] = await Promise.all([
-      apiCall('productMaster.list'),
-      apiCall('config.get'),
-      apiCall('mrf.list', { scope: canSeeAll ? 'all' : 'mine' }),
-      isApprover ? apiCall('mrf.list', { scope: 'pendingApproval' }) : Promise.resolve([])
-    ]);
+   const [config, mrfList, pending] = await Promise.all([
+  apiCall('config.get'),
+  apiCall('mrf.list', { scope: canSeeAll ? 'all' : 'mine' }),
+  isApprover
+    ? apiCall('mrf.list', { scope: 'pendingApproval' })
+    : Promise.resolve([])
+]);
+
+let products = [];
 
     const threshold = Number(config['MRF_APPROVAL_THRESHOLD'] || 0);
     let draftLines = []; // { itemCode, itemName, uom, rate, qty }
