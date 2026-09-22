@@ -8,7 +8,7 @@
  * -----------------------------------------------------------------------
  */
 
-const API_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzi0pqqgh6FjsHuPEHTIUYu4OmHIWO07AdRt0A7Da6drsR6Wi9JeNie23b1YBEhFzi0Lg/exec';
 
 const Session = {
   KEY: 'fims_session',
